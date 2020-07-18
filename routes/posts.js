@@ -25,8 +25,8 @@ const post = require('../models/post');
   // Add Post
   router.post('/', function(req,res) {
    var newPost = new Post({content: req.body.content , comments: [] , user: req.body.user_id });
-   Post.create(newPost).then(() => {
-     res.status(200).json({message: 'Post added successfully'});
+   Post.create(newPost).then((result) => {
+     res.status(200).json({message: 'Post added successfully' , post: result});
    }).catch(err => {
      res.status(500).json({message: err.message});
    })
@@ -37,7 +37,7 @@ const post = require('../models/post');
   router.put('/:id', function(req, res) {
     Post.findByIdAndUpdate(req.params.id, {content: req.body.content}, {runValidators: true}).then(result => {
       if(!result) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not found' })
-      res.status(200).json({message: 'Post updated successfully'});
+      res.status(200).json({message: 'Post updated successfully', post: result});
     }).catch(err => {
       res.status(500).json({message: err.message});
     })
@@ -48,7 +48,7 @@ const post = require('../models/post');
   router.delete('/:id', function(req, res) {
     Post.findByIdAndDelete(req.params.id).then(result => {
       if(!result) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not found' })
-      res.status(200).json({message: 'Post deleted successfully'});
+      res.status(200).json({message: 'Post deleted successfully', post: result});
     }).catch(err => {
       res.status(500).catch({message: err.message});
     })
