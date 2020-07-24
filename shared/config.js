@@ -1,5 +1,6 @@
 let config = {};
-
+config.baseUrl = 'https://blogify-backend.herokuapp.com/';
+// config.baseUrl = 'http://localhost:3000/';
 config.db = {};
 config.db.username = 'waseem';
 config.db.password = 'webdeveloper';

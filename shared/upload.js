@@ -1,5 +1,6 @@
 var path = require('path');
 var multer = require('multer');
+const config = require('./config');
 
 
 // SET STORAGE
@@ -27,7 +28,7 @@ const uploadMiddleWare = ( req , res , next ) => {
     if(!req.file) {
         return res.status(400).json({message: 'Fail to upload file'});
     }
-    return res.status(200).json({message: 'File Upladed successfully', file: req.file})
+    return res.status(200).json({message: 'File Upladed successfully', imagePath: config.baseUrl + req['file']['path'] , file: req.file})
 };
 
 module.exports= { upload , uploadMiddleWare }

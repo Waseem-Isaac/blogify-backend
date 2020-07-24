@@ -3,6 +3,7 @@ var router = express.Router();
 var bcrypt = require('bcrypt');
 
 var User = require('../models/user');
+const config = require('../shared/config');
 
 // Get all users
 router.get('/' , (req , res) => {
@@ -20,7 +21,9 @@ router.post('/' , async(req , res) => {
 
    newUser = new User({ name : req.body.name , email: req.body.email , password: req.body.password});
    newUser['password'] = req.body.password ? await bcrypt.hash(req.body.password, 10) : '';
-   newUser['picture'] = req.body.picture ? req.body.picture : `https://api.adorable.io/avatars/285/abott@${req.body.email}.png`
+   newUser['picture'] = req.body.picture ? 
+         req.body.picture : 
+        `https://ui-avatars.com/api/?background=29a0e9&color=fff&name=${req.body.name}`
    User.create(newUser).then(user => {
        res.status(200).send({message : 'User added successfully'})
    }).catch(err => {
