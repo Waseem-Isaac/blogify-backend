@@ -23,7 +23,7 @@ router.post('/' , async(req , res) => {
    newUser['password'] = req.body.password ? await bcrypt.hash(req.body.password, 10) : '';
    newUser['picture'] = req.body.picture ? 
          req.body.picture : 
-        `https://ui-avatars.com/api/?background=29a0e9&color=fff&name=${req.body.name}`
+        `https://ui-avatars.com/api/?background=f0f0f0&color=29a0e9&name=${req.body.name}`
    User.create(newUser).then(user => {
        res.status(200).send({message : 'User added successfully'})
    }).catch(err => {
