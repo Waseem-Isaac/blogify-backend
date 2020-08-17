@@ -17,10 +17,17 @@ const post = require('../models/post');
   // =============================== 
   // Get post by id 
   router.get('/:id' , (req , res ) => {
-    Post.findById(req.params.id).populate('user', 'name picture' ).exec(function (err, post) {
+    Post.findById(req.params.id).populate('user', 'name picture' )
+      .exec(function (err, post) {
       if (err) return res.status(500).json({message: err.message})
       if(!post) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not fount' })
-      res.status(200).json(post)
+
+
+      Post.populate(post.comments, {path: 'user', select: 'name picture'}, (err, doc) => {
+        if(err) return res.status(500).json({message: err.message})
+        res.status(200).json(post)
+      })
+
     })
   });
 
