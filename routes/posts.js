@@ -3,7 +3,7 @@ var router = express.Router();
 var ObjectId = require('mongodb').ObjectId; 
 
 var Post = require('../models/post');
-const post = require('../models/post');
+// const post = require('../models/post');
 
   // =============================== 
   // Get all posts
