@@ -7,27 +7,28 @@ var Post = require('../models/post');
 
   // =============================== 
   // Get all posts
-  router.get('/', function(req, res, next) {
-    Post.find().populate('user', 'name picture' ).exec(function (err, posts) {
-      if (err) return res.status(500).json({message: err.message})
-      res.status(200).json(posts.filter(p => p.user))
-    })
-  });
+    router.get('/', function(req, res, next) {
+      Post.find()
+                .populate('user' , 'name picture')
+                .populate('comments.user' , 'name picture')
+      .exec(function (err, posts) {
+        if (err) return res.status(500).json({message: err.message})
+
+        posts.forEach(p => { p.comments = p.comments.filter(c => c.user); }); // Only return comment made by exit user.        
+        res.status(200).json(posts.filter(p => p.user))
+      })
+    });
 
   // =============================== 
   // Get post by id 
   router.get('/:id' , (req , res ) => {
-    Post.findById(req.params.id).populate('user', 'name picture' )
+    Post.findById(req.params.id).populate('user', 'name picture' ).populate('comments.user' , 'name pictur')
       .exec(function (err, post) {
       if (err) return res.status(500).json({message: err.message})
       if(!post) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not fount' })
 
-
-      Post.populate(post.comments, {path: 'user', select: 'name picture'}, (err, doc) => {
-        if(err) return res.status(500).json({message: err.message})
-        res.status(200).json(post)
-      })
-
+      post['comments'] = post.comments.filter(comment => comment.user);;
+      res.status(200).json(post)
     })
   });
 
@@ -79,14 +80,6 @@ router.put('/:id/like' , function(req, res) {
 
     res.status(200).json({numberOfLikes: post.likes.length});
   })
-  // Post.findByIdAndUpdate(req.params.id , {  $addToSet : { likes : { userId: req.body.userId} } }).then(post =>{
-  //   if(!post) return res.status(404).json({message: 'Post with id :( ' +req.params.post_id+ ' )is not found to be liked' });
-
-  //   console.log(post.likes);
-  //   res.status(200).json({message: 'Like added successfully'})
-  // }).catch(err => {
-  //   res.status(500).json({message : err.message});
-  // })
 })
 
 module.exports = router;
