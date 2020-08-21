@@ -10,6 +10,7 @@ var Post = require('../models/post');
     router.get('/', function(req, res, next) {
       Post.find()
                 .populate('user' , 'name picture')
+                .populate('category', 'name')
                 .populate('comments.user' , 'name picture')
       .exec(function (err, posts) {
         if (err) return res.status(500).json({message: err.message})
@@ -22,7 +23,10 @@ var Post = require('../models/post');
   // =============================== 
   // Get post by id 
   router.get('/:id' , (req , res ) => {
-    Post.findById(req.params.id).populate('user', 'name picture' ).populate('comments.user' , 'name picture')
+    Post.findById(req.params.id)
+          .populate('user', 'name picture' )
+          .populate('category', 'name')
+          .populate('comments.user' , 'name picture')
       .exec(function (err, post) {
       if (err) return res.status(500).json({message: err.message})
       if(!post) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not fount' })
@@ -35,7 +39,7 @@ var Post = require('../models/post');
   // =============================== 
   // Add Post
   router.post('/', function(req,res) {
-   var newPost = new Post({content: req.body.content , comments: [] ,likes: [], user: req.body.user_id });
+   var newPost = new Post({content: req.body.content , comments: [] ,likes: [], user: req.body.user_id, category: req.body.category_id });
    Post.create(newPost).then((result) => {
      res.status(200).json({message: 'Post added successfully' , post: result});
    }).catch(err => {
@@ -46,7 +50,8 @@ var Post = require('../models/post');
   // =============================== 
   // Update post by id
   router.put('/:id', function(req, res) {
-    Post.findByIdAndUpdate(req.params.id, {content: req.body.content}, {runValidators: true}).then(result => {
+    Post.findByIdAndUpdate(req.params.id, {content: req.body.content, category: req.body.category_id }, {runValidators: true})
+    .then(result => {
       if(!result) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not found' })
       res.status(200).json({message: 'Post updated successfully', post: result});
     }).catch(err => {
@@ -86,6 +91,7 @@ router.put('/:id/like' , function(req, res) {
 router.get('/user/:user_id', (req, res) => {
   Post.find({user: req.params.user_id})
       .populate('user' , 'name picture')
+      .populate('category', 'name')
       .populate('comments.user' , 'name picture')
     .exec(function (err, posts) {
     if (err) return res.status(500).json({message: err.message})
