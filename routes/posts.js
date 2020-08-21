@@ -22,7 +22,7 @@ var Post = require('../models/post');
   // =============================== 
   // Get post by id 
   router.get('/:id' , (req , res ) => {
-    Post.findById(req.params.id).populate('user', 'name picture' ).populate('comments.user' , 'name pictur')
+    Post.findById(req.params.id).populate('user', 'name picture' ).populate('comments.user' , 'name picture')
       .exec(function (err, post) {
       if (err) return res.status(500).json({message: err.message})
       if(!post) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not fount' })
@@ -79,6 +79,19 @@ router.put('/:id/like' , function(req, res) {
     });
 
     res.status(200).json({numberOfLikes: post.likes.length});
+  })
+})
+
+// Get Post by User Id
+router.get('/user/:user_id', (req, res) => {
+  Post.find({user: req.params.user_id})
+      .populate('user' , 'name picture')
+      .populate('comments.user' , 'name picture')
+    .exec(function (err, posts) {
+    if (err) return res.status(500).json({message: err.message})
+
+    posts.forEach(p => { p.comments = p.comments.filter(c => c.user); }); // Only return comment made by exit user.        
+    res.status(200).json(posts.filter(p => p.user))
   })
 })
 
