@@ -1,21 +1,21 @@
 var express = require('express');
 var router = express.Router();
 var ObjectId = require('mongodb').ObjectId; 
-
+var query = require('querymen').middleware;
 var Post = require('../models/post');
 // const post = require('../models/post');
 
   // =============================== 
   // Get all posts
-    router.get('/', function(req, res, next) {
-      Post.find()
+    router.get('/', query(), function({ querymen: { query, select, cursor } }, res, next) {
+      Post.find(query,select, cursor)
                 .populate('user' , 'name picture')
                 .populate('category', 'name')
                 .populate('comments.user' , 'name picture')
       .exec(function (err, posts) {
         if (err) return res.status(500).json({message: err.message})
 
-        posts.forEach(p => { p.comments = p.comments.filter(c => c.user); }); // Only return comment made by exit user.        
+        posts.forEach(p => { p.comments = p.comments.filter(c => c.user); }); // Only return comment made by exit user.  
         res.status(200).json(posts.filter(p => p.user))
       })
     });

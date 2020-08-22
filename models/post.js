@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongooseKeywords = require('mongoose-keywords')
 
 const postSchema = new mongoose.Schema({
     content: {
@@ -26,5 +27,8 @@ const postSchema = new mongoose.Schema({
         required: true,
     }
 }, {versionKey : false , timestamps: true});
+
+postSchema.plugin(mongooseKeywords, {paths: ['content']});
+
 
 module.exports = mongoose.model('Post' , postSchema);
