@@ -12,6 +12,7 @@ var Post = require('../models/post');
                 .populate('user' , 'name picture')
                 .populate('category', 'name')
                 .populate('comments.user' , 'name picture')
+                .sort({ createdAt: -1 })
       .exec(function (err, posts) {
         if (err) return res.status(500).json({message: err.message})
 
@@ -93,6 +94,7 @@ router.get('/user/:user_id', (req, res) => {
       .populate('user' , 'name picture')
       .populate('category', 'name')
       .populate('comments.user' , 'name picture')
+      .sort({ createdAt: -1 })
     .exec(function (err, posts) {
     if (err) return res.status(500).json({message: err.message})
 
