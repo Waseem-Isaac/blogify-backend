@@ -28,7 +28,7 @@ var server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-const connectionString = config.db.connectionString;
+const connectionString = config.dbConnectionString;
 
 // db.connect(connectionString, function(err) {
 //   if (err) {

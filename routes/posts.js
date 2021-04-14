@@ -3,7 +3,15 @@ var router = express.Router();
 var ObjectId = require('mongodb').ObjectId; 
 var query = require('querymen').middleware;
 var Post = require('../models/post');
-// const post = require('../models/post');
+
+const Pusher = require("pusher");
+
+let pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID,
+  key: process.env.PUSHER_APP_KEY,
+  secret: process.env.PUSHER_APP_SECRET,
+  cluster: process.env.PUSHER_APP_CLUSTER
+});
 
   // =============================== 
   // Get all posts
@@ -42,7 +50,8 @@ var Post = require('../models/post');
   router.post('/', function(req,res) {
    var newPost = new Post({content: req.body.content , comments: [] ,likes: [], user: req.body.user_id, category: req.body.category_id });
    Post.create(newPost).then((result) => {
-     res.status(200).json({message: 'Post added successfully' , post: result});
+    pusher.trigger('posts-channel', 'postAdded', { post: result }, {socket_id: req.body.socketId});
+    res.status(200).json({message: 'Post added successfully' , post: result});
    }).catch(err => {
      res.status(500).json({message: err.message});
    })
@@ -84,6 +93,7 @@ router.put('/:id/like' , function(req, res) {
       }
     });
 
+    pusher.trigger('posts-channel', 'likeAdded', { postId: req.params.id, numberOfLikes: post.likes.length });
     res.status(200).json({numberOfLikes: post.likes.length});
   })
 })

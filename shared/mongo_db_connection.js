@@ -5,7 +5,7 @@ var state = {
   db: null,
 }
 
-const connectionString = config.db.connectionString;
+const connectionString = config.dbConnectionString;
 
 exports.connect = function(connectionString, done) {
   if (state.db) return done()
