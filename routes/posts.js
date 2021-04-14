@@ -74,6 +74,8 @@ let pusher = new Pusher({
   router.delete('/:id', function(req, res) {
     Post.findByIdAndDelete(req.params.id).then(result => {
       if(!result) return res.status(404).json({message: 'Post with id :( ' +req.params.id+ ' )is not found' })
+
+      pusher.trigger('posts-channel', 'postDeleted', { postId: req.params.id }, {socket_id: req.query.socketId});
       res.status(200).json({message: 'Post deleted successfully', post: result});
     }).catch(err => {
       res.status(500).catch({message: err.message});
@@ -93,7 +95,7 @@ router.put('/:id/like' , function(req, res) {
       }
     });
 
-    pusher.trigger('posts-channel', 'likeAdded', { postId: req.params.id, numberOfLikes: post.likes.length });
+    pusher.trigger('posts-channel', 'likeAdded', { postId: req.params.id, numberOfLikes: post.likes.length }, {socket_id: req.body.socketId});
     res.status(200).json({numberOfLikes: post.likes.length});
   })
 })
